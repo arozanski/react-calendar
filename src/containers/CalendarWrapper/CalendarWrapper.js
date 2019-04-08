@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import Event from '../Event/Event';
-import Ax from '../../hoc/Ax/ax';
+import Event from '../../components/Event/Event';
+import EventDetails from '../../components/EventDetails/EventDetails';
+import Aux from '../../hoc/Aux/Aux';
 import Modal from '../../components/UI/Modal/Modal';
 import CreateEvent from '../../components/CreateEvent/CreateEvent';
 import * as eventActions from '../../store/actions/events';
+import {default as UUID} from 'node-uuid';
 
 const localizer = BigCalendar.momentLocalizer(moment);
 
@@ -60,18 +62,35 @@ class CalendarWrapper extends Component {
         const newEvent = {
             title: event.target.elements.title.value,
             start: start,
-            end: end
-        }
+            end: end,
+            backgroundColor: event.target.elements.background.value || '#3174ad',
+            id: UUID.v4()
+        };
 
         this.props.onAddEvent(newEvent);
         this.showModal(false);
     }
 
+    deleteHandler = (eventId) => {
+        this.props.onDeleteEvent(eventId);
+        this.showModal(false);
+    }
+
     render () {
-        const modalContent = (<Ax>{this.props.selected ? <Event title={this.props.selected.title} /> : <CreateEvent onSubmitHandler={this.onSubmitHandler}/>}</Ax>);
+        const modalContent = (<Aux>{this.props.selected ? 
+            <EventDetails 
+                event={this.props.selected}
+                closeHandler={this.closeModalHandler}
+                editHandler={this.editHandler}
+                deleteHandler={this.deleteHandler}
+                /> : 
+            <CreateEvent onSubmitHandler={this.onSubmitHandler} 
+                event={this.props.selected}
+                colors={this.props.colors}
+                closeHandler={this.closeModalHandler}/>}</Aux>);
 
         return (
-            <Ax>
+            <Aux>
                 <Modal show={this.state.visible}
                     modalClosed={this.closeModalHandler}>
                     {modalContent}</Modal>
@@ -85,7 +104,7 @@ class CalendarWrapper extends Component {
                     defaultDate={new Date()}
                     onSelectEvent={event => this.selectEventHandler(event)}
                     onSelectSlot={this.selectEmptySlotHandler} />
-            </Ax>
+            </Aux>
         );
     }
 }
@@ -102,7 +121,8 @@ const mapDispatchToProps = dispatch => {
     return {
         onSelectEvent: (event) => dispatch(eventActions.setSelectedEvent(event)),
         deselectEvent: () => dispatch(eventActions.deselectEvent()),
-        onAddEvent: (event) => dispatch(eventActions.addEvent(event))
+        onAddEvent: (event) => dispatch(eventActions.addEvent(event)),
+        onDeleteEvent: (eventId) => dispatch(eventActions.deleteEvent(eventId))
     }
 }
 

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import classes from './Modal.module.css';
-import Ax from '../../../hoc/Ax/ax';
+import Aux from '../../../hoc/Aux/Aux';
 import Backdrop from '../Backdrop/Backdrop';
 
 class Modal extends Component {
@@ -10,14 +10,14 @@ class Modal extends Component {
     
     render () {
         return (
-            <Ax>
+            <Aux>
                 <Backdrop show={this.props.show} clicked={this.props.modalClosed}/>
                 <div className={classes.Modal}
                     style={{transform: this.props.show ? 'translateY(0)' : 'translate(-100vh)',
                     opacity: this.props.show ? '1' : '0' }}>
                     {this.props.children}
                 </div>
-            </Ax>
+            </Aux>
         );
     }
 }

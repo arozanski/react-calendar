@@ -15,10 +15,10 @@ export const addEvent = (event) => {
     }
 }
 
-export const deleteEvent = (event) => {
+export const deleteEvent = (eventId) => {
     return {
         type: actionTypes.DELETE_EVENT,
-        event: event
+        eventId: eventId
     }
 }
 

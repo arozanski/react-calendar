@@ -1,4 +1,21 @@
 .CreateEvent label { 
-    width: 100px;
+    width: 160px;
     display: inline-block;
+}
+.CreateEvent select {
+    margin-left: 5px;
+}
+
+.CreateEvent button {
+    padding: 5px;
+    margin: 10px 0px 0 20px;
+    float: right;
+}
+
+.CreateEvent input {
+    padding: 5px;
+}
+
+.CreateEvent div {
+    margin: 5px 0;
 }
