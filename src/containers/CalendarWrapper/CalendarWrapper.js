@@ -14,8 +14,14 @@ const localizer = BigCalendar.momentLocalizer(moment);
 
 const initState = {
     visible: false,
-    start: null,
-    end: null,
+    editMode: false,
+    event: {
+        start: null,
+        end: null,
+        title: '',
+        backgroundColor: null,
+        id: null
+    }
 }
 
 class CalendarWrapper extends Component {
@@ -32,14 +38,16 @@ class CalendarWrapper extends Component {
 
     showModal = (visible) => {
         this.setState({visible});
+        
         if (!visible) {
             this.setState(initState);
         }
+
     }
 
-    selectEmptySlotHandler = ({ start, end }) => {
+    selectEmptySlotHandler = ({ start, end, title, id }) => {
        this.showModal(true);
-       this.setState({ start, end });
+       this.setState( { event: { start, end, title: title || '', id: id || '' }});
     }
 
     selectEventHandler = (event) => {
@@ -47,11 +55,10 @@ class CalendarWrapper extends Component {
         this.showModal(true);
     }
 
-    onSubmitHandler = (event) => {
+    onSubmitHandler = (event, eventId) => {
         event.preventDefault();
-
-        const start = new Date(this.state.start);
-        const end = new Date(this.state.end);
+        const start = new Date(this.state.event.start);
+        const end = new Date(this.state.event.end);
 
         start.setHours(event.target.elements.start.value.split(':')[0]);
         start.setMinutes(event.target.elements.start.value.split(':')[1]);
@@ -64,20 +71,40 @@ class CalendarWrapper extends Component {
             start: start,
             end: end,
             backgroundColor: event.target.elements.background.value || '#3174ad',
-            id: UUID.v4()
+            id: eventId || UUID.v4()
         };
 
-        this.props.onAddEvent(newEvent);
+        if (this.state.editMode) {
+            this.props.onUpdateEvent(newEvent);
+        } else {
+            this.props.onAddEvent(newEvent);
+            this.setState({ editMode: false })
+        }
+
         this.showModal(false);
     }
 
     deleteHandler = (eventId) => {
         this.props.onDeleteEvent(eventId);
         this.showModal(false);
+        this.props.deselectEvent();
+    }
+
+    editHandler = (event) => {
+        this.closeModalHandler();
+        this.setState({ editMode: true });
+        this.selectEventHandler(event);
+        this.selectEmptySlotHandler({start: event.start, end: event.end, title: event.title, id: event.id });
+    }
+
+    onChangeHandler = (value, elementName) => {
+        const newEvent = {...this.state.event, [elementName]: value};
+
+        this.setState({ event: newEvent });
     }
 
     render () {
-        const modalContent = (<Aux>{this.props.selected ? 
+        const modalContent = (<Aux>{this.props.selected && !this.state.editMode ? 
             <EventDetails 
                 event={this.props.selected}
                 closeHandler={this.closeModalHandler}
@@ -85,8 +112,10 @@ class CalendarWrapper extends Component {
                 deleteHandler={this.deleteHandler}
                 /> : 
             <CreateEvent onSubmitHandler={this.onSubmitHandler} 
-                event={this.props.selected}
+                editMode={this.state.editMode}
+                event={this.state.event}
                 colors={this.props.colors}
+                change={this.onChangeHandler}
                 closeHandler={this.closeModalHandler}/>}</Aux>);
 
         return (
@@ -100,7 +129,6 @@ class CalendarWrapper extends Component {
                     events={this.props.events}
                     components={{ event: Event }}
                     step={60}
-                    showMultiDayTimes
                     defaultDate={new Date()}
                     onSelectEvent={event => this.selectEventHandler(event)}
                     onSelectSlot={this.selectEmptySlotHandler} />
@@ -122,7 +150,8 @@ const mapDispatchToProps = dispatch => {
         onSelectEvent: (event) => dispatch(eventActions.setSelectedEvent(event)),
         deselectEvent: () => dispatch(eventActions.deselectEvent()),
         onAddEvent: (event) => dispatch(eventActions.addEvent(event)),
-        onDeleteEvent: (eventId) => dispatch(eventActions.deleteEvent(eventId))
+        onDeleteEvent: (eventId) => dispatch(eventActions.deleteEvent(eventId)),
+        onUpdateEvent: (event) => dispatch(eventActions.updateEvent(event))
     }
 }
 

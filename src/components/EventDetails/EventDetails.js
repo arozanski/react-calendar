@@ -9,7 +9,7 @@ const eventDetails = (props) => {
             <div className={styles.EventDetails}>
                 <button onClick={props.closeHandler}>Close</button>
                 <button onClick={() => props.deleteHandler(props.event.id)}>Delete</button>
-                <button onClick={props.editHandler}>Edit</button>
+                <button onClick={() => props.editHandler(props.event)}>Edit</button>
             </div>
         </Aux>
     );

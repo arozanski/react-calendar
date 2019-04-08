@@ -24,6 +24,13 @@ const reducer = (state = initState, action) => {
             }
             return newState;
         case actionTypes.DELETE_EVENT: return updateObject(state, { events: state.events.filter(event => event.id !== action.eventId) });
+        case actionTypes.UPDATE_EVENT: 
+        const updatedEvents = [...state.events.filter(event => event.id !== action.event.id), action.event];
+        const udpatedState = {
+            ...state,
+            events: updatedEvents
+        }
+        return udpatedState;
         default: return state;
     }
 }

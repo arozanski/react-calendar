@@ -11,19 +11,26 @@ export const setSelectedEvent = (event) => {
 export const addEvent = (event) => {
     return {
         type: actionTypes.ADD_EVENT,
-        event: event
+        event
     }
 }
 
 export const deleteEvent = (eventId) => {
     return {
         type: actionTypes.DELETE_EVENT,
-        eventId: eventId
+        eventId
     }
 }
 
 export const deselectEvent = () => {
     return {
         type: actionTypes.DESELECT_EVENT
+    }
+}
+
+export const updateEvent = (event) => {
+    return {
+        type: actionTypes.UPDATE_EVENT,
+        event
     }
 }

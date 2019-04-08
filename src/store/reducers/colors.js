@@ -1,5 +1,3 @@
-import * as actionTypes from '../actions/actionTypes';
-
 const initState = {
     colors: [{
         label: 'red',
