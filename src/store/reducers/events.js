@@ -5,7 +5,7 @@ const initState = {
     events: [{
         title: "test event",
         start: "2019-04-10T09:09:00.000Z",
-        end: "2019-04-10T10:00:00.000Z",
+        end: "2019-04-10T17:45:00.000Z",
         backgroundColor: "#f44256",
         id: 'evt-1'
     }],
